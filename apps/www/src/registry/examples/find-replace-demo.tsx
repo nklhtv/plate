@@ -2,6 +2,8 @@
 
 import * as React from 'react';
 
+import debounce from 'lodash/debounce.js';
+
 import { FindReplacePlugin } from '@platejs/find-replace';
 import {
   Plate,
@@ -53,8 +55,17 @@ export default function FindReplaceDemo() {
     []
   );
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const refetchDictionary = React.useCallback(
+    debounce(() => {
+      editor.setOption(FindReplacePlugin, "search", "bug");
+      editor.api.redecorate();
+    }, 1_500),
+    [editor]
+  );
+
   return (
-    <Plate editor={editor}>
+    <Plate editor={editor} onValueChange={() => refetchDictionary()}>
       <FindToolbar />
 
       <EditorContainer variant="demo" className="border-t">
